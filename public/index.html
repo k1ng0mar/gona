@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gona, offline crop advisor</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="brand">Gona</div>
+    <h1>What is wrong with my crop?</h1>
+    <p class="sub">Press the button and describe what you see. Works with no signal.
+      The answer comes from a knowledge base on this device, not the internet.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card" id="mic-card">
+    <button id="mic" aria-label="Describe the problem out loud">
+      <span class="mic-dot"></span>
+      <span id="mic-label">Hold to speak</span>
+    </button>
+    <p class="hint" id="mic-hint">Or type below if you prefer.</p>
+
+    <form id="type-form">
+      <label for="symptoms">Describe the problem</label>
+      <textarea id="symptoms" rows="3"
+        placeholder="e.g. my tomato leaves have yellow patches and grey spots underneath"></textarea>
+      <button type="submit" class="go">Diagnose</button>
+    </form>
+    <p class="fine">No account. No network. Nothing you say leaves this device.</p>
+  </section>
+
+  <div id="status" class="hidden"></div>
+
+  <section id="results" class="hidden">
+    <div class="card">
+      <h2 id="result-title">Diagnosis</h2>
+      <p class="heard" id="heard"></p>
+    </div>
+    <div id="matches"></div>
+    <button id="again" class="ghost">Check another plant</button>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p id="kb-line">Loading knowledge base...</p>
+  <p class="fine">Gona means "plant" in Hausa. Every diagnosis cites its source.
+    Built for Hacktoberfest 2026, Week 1: Touch Grass.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "gona",
+  "version": "1.0.0",
+  "description": "Gona: an offline crop advisor for West African smallholders. Local speech, local knowledge base, no internet.",
+  "license": "MIT",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/match.test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
