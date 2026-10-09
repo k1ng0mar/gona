@@ -1,3 +1,6 @@
+import { init as initEngine, transcribe } from "./engine.js";
+import { match } from "./matcher.js";
+
 const $ = (id) => document.getElementById(id);
 
 const esc = (s) =>
@@ -6,6 +9,9 @@ const esc = (s) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+
+let KB = null;
+let engineReady = false;
 
 function showStatus(kind, msg) {
   const s = $("status");
@@ -16,7 +22,7 @@ function hideStatus() {
   $("status").className = "hidden";
 }
 
-// ---- speak the answer out loud, using the device's own voice ----
+// read the answer out with the device's own voice, no model needed
 function speak(text) {
   if (!("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
@@ -25,14 +31,22 @@ function speak(text) {
   window.speechSynthesis.speak(u);
 }
 
-async function loadHealth() {
+async function loadKb() {
+  const r = await fetch("kb/crops.json");
+  KB = await r.json();
+  $("kb-line").textContent =
+    `${KB.entries.length} conditions, ${Object.keys(KB.meta.sources).length} cited sources, runs offline.`;
+}
+
+async function warmEngine() {
   try {
-    const r = await fetch("/api/health");
-    const h = await r.json();
-    $("kb-line").textContent =
-      `${h.kb_entries} conditions, ${h.kb_sources} cited sources, runs offline.`;
+    await initEngine((stage) => showStatus("loading", stage + "..."));
+    engineReady = true;
+    hideStatus();
   } catch (e) {
-    $("kb-line").textContent = "Knowledge base unavailable.";
+    $("mic").disabled = true;
+    $("mic-label").textContent = "Speech unavailable";
+    $("mic-hint").textContent = "Type the symptoms instead, that still works offline.";
   }
 }
 
@@ -48,14 +62,9 @@ function renderMatches(matches) {
   matches.forEach((m, i) => {
     const card = document.createElement("div");
     card.className = "card match" + (i === 0 ? " top" : "");
-    const treat = (m.treatment || [])
-      .map((t) => `<li>${esc(t)}</li>`)
-      .join("");
-    const conf = (m.confusions || [])
-      .map((c) => `<li>${esc(c)}</li>`)
-      .join("");
-    // Every value below passes through esc() first, and urgencyLabel returns a
-    // fixed string, so this innerHTML carries no attacker controlled markup.
+    const treat = (m.treatment || []).map((t) => `<li>${esc(t)}</li>`).join("");
+    const conf = (m.confusions || []).map((c) => `<li>${esc(c)}</li>`).join("");
+    // every interpolation passes through esc(), urgencyLabel returns a fixed string
     card.innerHTML = `
       <div class="match-head">
         <h2>${esc(m.name)}</h2>
@@ -66,95 +75,103 @@ function renderMatches(matches) {
       <h3>What to do</h3>
       <ul class="treat">${treat}</ul>
       ${conf ? `<details><summary>Similar problems, how to tell them apart</summary><ul class="plain">${conf}</ul></details>` : ""}
+      <p class="src">Source: ${esc(m.source)}</p>
     `;
     box.appendChild(card);
   });
 }
 
-async function diagnose(text) {
-  showStatus("loading", "Checking the knowledge base...");
-  try {
-    const r = await fetch("/api/diagnose", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ symptoms: text }),
-    });
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.message || "Something went wrong.");
-    if (!data.matches.length) {
-      showStatus(
-        "error",
-        "No match in the knowledge base. Try naming the crop and what you see, for example the colour and where it is."
-      );
-      return;
-    }
-    $("heard").textContent = text;
-    renderMatches(data.matches);
-    $("mic-card").classList.add("hidden");
-    hideStatus();
-    $("results").classList.remove("hidden");
-
-    const top = data.matches[0];
-    const spoken = `${top.name}. ${(top.treatment || [])[0] || ""}`;
-    speak(spoken);
-  } catch (err) {
-    showStatus("error", err.message);
+function diagnose(text) {
+  if (!KB) return;
+  const result = match(text, KB, 3);
+  if (!result.matches.length) {
+    showStatus(
+      "error",
+      "No match in the knowledge base. Name the crop and what you see, for example the colour and where it is."
+    );
+    return;
   }
+  $("heard").textContent = text;
+  renderMatches(result.matches);
+  $("mic-card").classList.add("hidden");
+  hideStatus();
+  $("results").classList.remove("hidden");
+  const top = result.matches[0];
+  speak(`${top.name}. ${(top.treatment || [])[0] || ""}`);
 }
 
-// ---- voice input: record, send to the local Whisper model ----
-let mediaRecorder = null;
-let chunks = [];
+// ---- capture straight to samples, run the local model, no upload ----
 let recording = false;
+let audioCtx = null;
+let sourceNode = null;
+let procNode = null;
+let streamRef = null;
+let buffers = [];
+let sampleRate = 16000;
 
 async function startRecording() {
-  if (recording) return;
+  if (recording || !engineReady) return;
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    chunks = [];
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-    mediaRecorder.onstop = async () => {
-      stream.getTracks().forEach((t) => t.stop());
-      const blob = new Blob(chunks, { type: "audio/webm" });
-      await transcribe(blob);
-    };
-    mediaRecorder.start();
+    streamRef = await navigator.mediaDevices.getUserMedia({
+      audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true },
+    });
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    sampleRate = audioCtx.sampleRate;
+    sourceNode = audioCtx.createMediaStreamSource(streamRef);
+    procNode = audioCtx.createScriptProcessor(4096, 1, 1);
+    buffers = [];
+    procNode.onaudioprocess = (e) =>
+      buffers.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+    sourceNode.connect(procNode);
+    procNode.connect(audioCtx.destination);
     recording = true;
     $("mic").classList.add("live");
     $("mic-label").textContent = "Listening, release when done";
+    showStatus("loading", "Listening...");
   } catch (e) {
-    showStatus(
-      "error",
-      "Microphone is not available. Type the symptoms instead."
-    );
+    showStatus("error", "Microphone is not available. Type the symptoms instead.");
   }
 }
 
-function stopRecording() {
-  if (!recording || !mediaRecorder) return;
+async function stopRecording() {
+  if (!recording) return;
   recording = false;
   $("mic").classList.remove("live");
   $("mic-label").textContent = "Hold to speak";
-  mediaRecorder.stop();
-}
 
-async function transcribe(blob) {
-  showStatus("loading", "Transcribing on this device...");
-  const buf = await blob.arrayBuffer();
-  const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
   try {
-    const r = await fetch("/api/transcribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ audio: b64 }),
-    });
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.message || "Transcription failed.");
-    $("symptoms").value = data.text;
-    await diagnose(data.text);
-  } catch (err) {
-    showStatus("error", err.message);
+    if (procNode) procNode.disconnect();
+    if (sourceNode) sourceNode.disconnect();
+    if (streamRef) streamRef.getTracks().forEach((t) => t.stop());
+    if (audioCtx) await audioCtx.close();
+  } catch (e) {}
+
+  const total = buffers.reduce((n, b) => n + b.length, 0);
+  const all = new Float32Array(total);
+  let o = 0;
+  for (const b of buffers) {
+    all.set(b, o);
+    o += b.length;
+  }
+  buffers = [];
+
+  if (total < sampleRate * 0.4) {
+    showStatus("error", "Too short. Hold the button while you describe the problem.");
+    return;
+  }
+
+  showStatus("loading", "Transcribing on this device...");
+  try {
+    const { text, ms } = await transcribe(all, sampleRate);
+    if (!text.trim()) {
+      showStatus("error", "Did not catch that. Try again, or type the symptoms.");
+      return;
+    }
+    $("symptoms").value = text;
+    showStatus("loading", `Heard you in ${(ms / 1000).toFixed(1)}s. Checking the knowledge base...`);
+    setTimeout(() => diagnose(text), 250);
+  } catch (e) {
+    showStatus("error", e.message);
   }
 }
 
@@ -183,4 +200,5 @@ $("again").addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-loadHealth();
+// knowledge base first so typing works at once, then the speech engine
+loadKb().then(warmEngine);

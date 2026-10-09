@@ -47,10 +47,16 @@
 
 <footer class="wrap">
   <p id="kb-line">Loading knowledge base...</p>
-  <p class="fine">Gona means "plant" in Hausa. Every diagnosis cites its source.
-    Built for Hacktoberfest 2026, Week 1: Touch Grass.</p>
 </footer>
 
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
+<script>
+  // register the offline cache, so the next visit works with no network
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+</script>
 </body>
 </html>

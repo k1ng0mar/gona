@@ -122,7 +122,7 @@ function match(symptomsText, kb, topN) {
   };
 }
 
-module.exports = { match, loadKb, tokens, detectCrop, SYNONYMS };
+module.exports = { match, loadKb, tokens, detectCrop, SYNONYMS, CROP_ALIASES };
 
 if (require.main === module) {
   const q = process.argv.slice(2).join(" ") ||

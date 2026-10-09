@@ -1,0 +1,346 @@
+{
+  "meta": {
+    "name": "Gona field knowledge base",
+    "version": "1.0",
+    "region": "Northern Nigeria and the West African savanna belt",
+    "note": "Curated from published plant pathology and extension sources. Every entry cites its source. This is not a model's opinion.",
+    "sources": {
+      "cabi_faw": "FAO and CABI (2019). Fall Armyworm Field Handbook: Identification and Management, First Edition.",
+      "clemson_tomato": "Clemson Cooperative Extension HGIC 2217, Tomato Diseases and Disorders, updated Jul 2025.",
+      "iita_cmd": "IITA, Cassava mosaic disease and its causal agents: the Nigeria situation.",
+      "aps_cmd": "American Phytopathological Society, Cassava Mosaic Disease: A Curse to Food Security in Sub-Saharan Africa.",
+      "iita_rosette": "Waliyar et al., Groundnut Rosette Disease and its Management, IITA.",
+      "aps_rosette": "Naidu et al. (1999), Plant Disease 83:8, Groundnut Rosette.",
+      "wikipedia_byvmv": "Bhendi yellow vein mosaic virus, Wikipedia (taxonomy from ICTV).",
+      "cabi_striga": "CABI Digital Library, Striga or witchweed (multiple crops).",
+      "irac_tuta": "IRAC, Tuta absoluta: The Tomato Leafminer or Tomato Borer.",
+      "iita_aphid": "IITA biblio, Aphid transmission of viruses causing chlorotic and green rosette of peanut in Nigeria.",
+      "plantwise_cowpea": "Plantwise Knowledge Bank, Mosaic diseases of cowpea.",
+      "msu_downy": "Michigan State University Extension, Downy Mildew.",
+      "uf_ifas_downy": "University of Florida IFAS, Powdery Mildew vs Downy Mildew.",
+      "wsu_mites": "Washington State University Hortsense, Tomato: Spider mites.",
+      "ucipm_mites": "University of California IPM, Spider Mites."
+    }
+  },
+  "entries": [
+    {
+      "id": "downy-mildew-tomato",
+      "crop": "tomato",
+      "name": "Downy mildew",
+      "pathogen": "oomycete water moulds, not true fungi",
+      "type": "oomycete",
+      "symptoms": [
+        "grey fuzzy or downy growth on the underside of the leaf",
+        "yellow angular spots on the upper leaf surface, bounded by the veins",
+        "the upper surface can look quilted",
+        "leaves become brittle and misshapen",
+        "in severe cases leaves and flowers drop"
+      ],
+      "confusions": [
+        "powdery mildew leaves a white powder usually on the upper surface, downy mildew is grey fuzz underneath",
+        "nutrient deficiency yellows evenly and does not produce fuzz on the underside",
+        "early blight has brown spots with concentric rings and no underside fuzz"
+      ],
+      "conditions": "favoured by crowded plants and wet leaf undersides that do not dry. Spreads fast in moist conditions and can cause total crop loss within weeks.",
+      "treatment": [
+        "space plants so leaves dry and air moves through",
+        "water at the base, keep the leaf undersides dry, drip is better than overhead",
+        "remove and destroy affected leaves and plants",
+        "many standard fungicides do not work, downy mildews are not true fungi, use a product labelled for downy mildew and follow the label",
+        "avoid working in the plot when the leaves are wet, you spread the spores"
+      ],
+      "urgency": "high",
+      "source": "msu_downy, uf_ifas_downy"
+    },
+    {
+      "id": "spider-mites-tomato",
+      "crop": "tomato, beans, pepper, okra",
+      "name": "Spider mites",
+      "pathogen": "Tetranychus species, especially two spotted spider mite",
+      "type": "mite",
+      "symptoms": [
+        "tiny white or yellow speckles on the leaves, called stippling",
+        "leaves look faded, dry or sandblasted despite watering",
+        "fine silk webbing on the underside of leaves and between stems",
+        "leaves take on a bronze colour as feeding continues",
+        "severe attack turns whole leaves yellow and they drop"
+      ],
+      "confusions": [
+        "aphids are visible and leave honeydew, mites are tiny and leave webbing",
+        "leafminer damage is hollow mines inside the leaf, not surface speckling",
+        "nutrient deficiency does not produce webbing"
+      ],
+      "conditions": "mites are tiny, you usually notice the damage before the pest. They feed on the undersides and thrive in hot dry conditions. Dusty leaves make them worse.",
+      "treatment": [
+        "check the undersides with a hand lens, or shake leaves over white paper and watch for moving specks",
+        "spray the leaf undersides with a strong jet of water to knock them back",
+        "use insecticidal soap or neem oil, cover the undersides where the mites live",
+        "keep plants well watered, drought stressed plants suffer more",
+        "avoid dusty conditions and excessive nitrogen which favours them",
+        "spare natural predators, they often keep mites in check"
+      ],
+      "urgency": "medium",
+      "source": "wsu_mites, ucipm_mites"
+    },
+    {
+      "id": "faw-maize",
+      "crop": "maize",
+      "name": "Fall armyworm",
+      "pathogen": "Spodoptera frugiperda",
+      "type": "insect",
+      "symptoms": [
+        "window pane damage on young leaves, clear patches where the surface is scraped",
+        "ragged, irregular holes in leaves as caterpillars grow",
+        "sawdust like frass in the whorl, tassels and cobs",
+        "caterpillar with a pale upside down Y on the head",
+        "four raised spots in a trapezium on each body segment",
+        "four spots in a square on the second to last segment",
+        "skin smooth to the touch"
+      ],
+      "confusions": [
+        "cotton bollworm has similar dots but a paler head and feels rough with tiny spines",
+        "African armyworm and stem borers also feed on maize but lack the Y mark and dot pattern"
+      ],
+      "conditions": "larvae develop between 11C and 30C, optimum 28C. Heavy rain washes eggs and young larvae off leaves.",
+      "treatment": [
+        "scout early, check the newest two or three leaves in the funnel where moths lay and larvae feed",
+        "handpick and crush egg masses and small larvae on small plots",
+        "apply wood ash, sand, or dry soil into the whorl on small plots",
+        "encourage natural enemies, ants are important predators, avoid broad spectrum sprays that kill them",
+        "neem and hot pepper extracts applied to the whorl are used with reported success",
+        "if spraying, aim the nozzle into the whorl, spray early morning or late afternoon, and rotate pesticide groups"
+      ],
+      "urgency": "high",
+      "source": "cabi_faw"
+    },
+    {
+      "id": "bacterial-wilt-tomato",
+      "crop": "tomato",
+      "name": "Bacterial wilt",
+      "pathogen": "Ralstonia solanacearum",
+      "type": "bacterium",
+      "symptoms": [
+        "youngest leaves wilt during the heat of the day and seem to recover overnight",
+        "wilting spreads to the whole plant while the leaves stay green",
+        "cut a stem crosswise, it looks brown and a milky or yellowish ooze may be visible",
+        "brown streaks in the vascular tissue along a split stem",
+        "eventual complete collapse of the plant"
+      ],
+      "confusions": [
+        "Fusarium wilt gives one sided yellowing or wilting",
+        "Verticillium wilt gives V shaped lesions on the leaflets",
+        "Southern blight has white strands at the soil line and small round tan bodies"
+      ],
+      "conditions": "favoured by high temperature and high moisture. The bacterium survives in soil for years and enters through root wounds from transplanting, cultivation or insects.",
+      "treatment": [
+        "there is no chemical control for bacterial wilt",
+        "remove and destroy infected plants, do not leave them in the plot",
+        "rotate away from tomato, pepper, eggplant, potato and sunflower for at least three years, use maize, beans or cabbage instead",
+        "plant certified disease free seedlings",
+        "disinfect tools and boots that touched infested soil before moving to another plot",
+        "grafted tomatoes on resistant rootstock give the strongest control where available"
+      ],
+      "urgency": "high",
+      "source": "clemson_tomato"
+    },
+    {
+      "id": "early-blight-tomato",
+      "crop": "tomato",
+      "name": "Early blight",
+      "pathogen": "Alternaria linariae (formerly A. solani)",
+      "type": "fungus",
+      "symptoms": [
+        "small brown lesions first on the older lower leaves",
+        "spots enlarge with concentric rings in a bullseye pattern",
+        "tissue around the spots turns yellow",
+        "stem lesions can girdle the plant near the soil line",
+        "fruit lesions are large with concentric rings, infected fruit often drops"
+      ],
+      "confusions": [
+        "late blight lesions are dark and water soaked with white mould on the leaf underside",
+        "bacterial spot lesions are smaller and angular"
+      ],
+      "conditions": "the fungus survives on infected debris in the soil, on seed, and on volunteer tomato plants. High temperature and humidity after the lesions appear kills foliage fast.",
+      "treatment": [
+        "remove and destroy infected lower leaves and branches",
+        "mulch to stop soil splash, water at the base, keep foliage dry",
+        "space plants so they do not touch",
+        "rotate and clear volunteer tomato and nightshade weeds",
+        "maintain potassium and calcium, side dress with calcium nitrate",
+        "if severe, mancozeb is very effective, copper or chlorothalonil are good, follow the label"
+      ],
+      "urgency": "medium",
+      "source": "clemson_tomato"
+    },
+    {
+      "id": "tuta-absoluta",
+      "crop": "tomato",
+      "name": "Tomato leafminer",
+      "pathogen": "Tuta absoluta",
+      "type": "insect",
+      "symptoms": [
+        "blotch shaped mines in the leaves, the most distinctive sign",
+        "larvae inside the leaf tissue and later inside the fruit",
+        "leaf curling and drying under heavy attack",
+        "stunted growth, damaged flowers and fruits",
+        "small cream eggs laid near the leaf veins and stems"
+      ],
+      "confusions": [
+        "leafminer flies make narrow winding mines, Tuta makes blotch mines",
+        "early blight lesions are fungal spots, not hollowed mines"
+      ],
+      "conditions": "a single female lays up to 300 eggs. Yield loss can reach 100 percent if unmanaged. This pest caused tomato shortages in Nigeria.",
+      "treatment": [
+        "inspect the crop weekly for the first mines and remove infested leaves",
+        "mass trap moths with pheromone sticky traps, 20 to 40 traps per hectare, start when traps catch more than three or four moths a week",
+        "remove and destroy crop debris after harvest, do not leave it beside the field",
+        "rotate insecticide groups because Tuta develops resistance quickly",
+        "netting or screens on nursery and high value plots",
+        "avoid continuous tomato on the same land"
+      ],
+      "urgency": "high",
+      "source": "irac_tuta"
+    },
+    {
+      "id": "cassava-mosaic",
+      "crop": "cassava",
+      "name": "Cassava mosaic disease",
+      "pathogen": "African cassava mosaic virus complex, begomoviruses",
+      "type": "virus",
+      "symptoms": [
+        "irregular yellow or yellow green mosaic on the leaves",
+        "misshapen and twisted leaflets",
+        "leaf distortion and vein clearing",
+        "stunted growth overall",
+        "few or no tubers on badly affected plants"
+      ],
+      "confusions": [
+        "cassava bacterial blight gives angular water soaked leaf spots and gum exudate, not mosaic",
+        "nutrient deficiency yellows more evenly without leaf twisting"
+      ],
+      "conditions": "spread by infected stem cuttings used as planting material, and by whitefly (Bemisia tabaci). Yield loss ranges from 32 to 69 percent.",
+      "treatment": [
+        "use certified disease free cuttings, this is the single most important step",
+        "plant resistant varieties, IITA bred lines such as TMS 30572 and related releases are widely available in Nigeria",
+        "uproot and destroy badly affected plants early, do not take cuttings from them",
+        "control whitefly and remove weeds that harbour the virus",
+        "do not move cuttings from a diseased plot to a clean one",
+        "interplant resistant with local landraces to reduce spread"
+      ],
+      "urgency": "high",
+      "source": "iita_cmd, aps_cmd"
+    },
+    {
+      "id": "groundnut-rosette",
+      "crop": "groundnut",
+      "name": "Groundnut rosette disease",
+      "pathogen": "Groundnut rosette virus complex with its assistor virus and satellite RNA",
+      "type": "virus",
+      "symptoms": [
+        "severely stunted plants with bunched, rosette shaped growth",
+        "chlorotic rosette: leaves turn yellow or yellow green and mottle",
+        "green rosette: leaves stay green but are small and bunched",
+        "little or no pod set on affected plants"
+      ],
+      "confusions": [
+        "leaf spot diseases give distinct brown or black spots on leaves",
+        "aphid damage alone stunts but does not make the rosette growth form"
+      ],
+      "conditions": "transmitted by the groundnut aphid Aphis craccivora. Aphids need a long feed to acquire the virus, which gives a window to act. Found only in sub Saharan Africa, the vector is worldwide.",
+      "treatment": [
+        "sow early in the season so plants mature before aphid numbers peak",
+        "sow at recommended density, dense cover leaves fewer bare patches that guide aphids in",
+        "spray insecticide between germination and day 40 to cut aphid spread",
+        "plant resistant varieties where available",
+        "intercrop with pigeon pea, maize or sorghum to interfere with aphid movement",
+        "remove volunteer and diseased groundnut plants and weeds that harbour aphids"
+      ],
+      "urgency": "high",
+      "source": "iita_rosette, aps_rosette"
+    },
+    {
+      "id": "cowpea-mosaic",
+      "crop": "cowpea",
+      "name": "Cowpea aphid borne mosaic",
+      "pathogen": "Cowpea aphid borne mosaic virus and related viruses",
+      "type": "virus",
+      "symptoms": [
+        "mosaic mottling on the leaves, light and dark green patches",
+        "leaf distortion and reduced leaf size",
+        "stunted plants",
+        "poor pod and grain formation"
+      ],
+      "confusions": [
+        "aphid colonies alone cause curling and honeydew but not true mosaic",
+        "nutrient deficiency does not distort the leaf shape this way"
+      ],
+      "conditions": "spread by aphids and is also seedborne. Known in Nigeria since 1976 as a serious legume virus in all agro ecological zones.",
+      "treatment": [
+        "use certified or virus free seed, the virus is seedborne",
+        "remove weeds that harbour aphids",
+        "control aphids early with insecticide, do not wait for colonies to build",
+        "rouge out badly affected plants",
+        "plant resistant varieties where available",
+        "avoid planting cowpea next to an old infected field"
+      ],
+      "urgency": "medium",
+      "source": "plantwise_cowpea, iita_aphid"
+    },
+    {
+      "id": "okra-yellow-vein-mosaic",
+      "crop": "okra",
+      "name": "Okra yellow vein mosaic",
+      "pathogen": "Bhendi yellow vein mosaic virus, begomovirus",
+      "type": "virus",
+      "symptoms": [
+        "yellowing of the leaf veins, which spreads to the whole leaf",
+        "leaf curling",
+        "stunted growth",
+        "poor flowering and small deformed pods"
+      ],
+      "confusions": [
+        "nutrient yellowing starts between the veins, mosaic starts on the veins",
+        "powdery mildew leaves a white powder, not vein yellowing"
+      ],
+      "conditions": "transmitted by whitefly. It is the major limitation on okra production. First described in 1924 in Bombay and now widespread.",
+      "treatment": [
+        "control whitefly, this is the main lever",
+        "remove and destroy infected plants early",
+        "keep the field weed free, weeds harbour whitefly",
+        "intercrop with maize or marigold to reduce whitefly landing",
+        "plant tolerant varieties where available",
+        "do not save seed from affected plants"
+      ],
+      "urgency": "high",
+      "source": "wikipedia_byvmv"
+    },
+    {
+      "id": "striga-cereals",
+      "crop": "maize, sorghum, millet, rice",
+      "name": "Striga (witchweed)",
+      "pathogen": "Striga hermonthica and related species",
+      "type": "parasitic weed",
+      "symptoms": [
+        "stunted, yellow, scorched looking plants, easily mistaken for drought stress",
+        "wilting despite adequate moisture",
+        "small purple or pink flowers at ground level around the base of the crop",
+        "the parasite is attached to the crop roots underground before any visible sign"
+      ],
+      "confusions": [
+        "drought stress looks similar above ground but the soil is dry and there are no Striga flowers",
+        "nitrogen deficiency yellows evenly and responds to fertiliser"
+      ],
+      "conditions": "Striga parasitises maize, sorghum, millet, sugarcane, upland rice and wild grasses. It attaches to the host roots and takes water and nutrients. Seeds stay viable in soil for years.",
+      "treatment": [
+        "rotate with a non host trap crop such as cowpea or groundnut, they trigger Striga seeds to germinate with nothing to parasitise",
+        "hand pull Striga before it flowers, and do it before seed set or you add years of seed to the soil",
+        "apply nitrogen, a well fed crop tolerates Striga better",
+        "use improved Striga resistant cereal varieties where available",
+        "intercrop cereals with legumes to reduce Striga emergence",
+        "there are herbicide seed treatment options for sorghum and millet"
+      ],
+      "urgency": "high",
+      "source": "cabi_striga"
+    }
+  ]
+}

@@ -1,4 +1,6 @@
 node_modules/
 .env
-*.cact
+# the speech weights are fetched, not committed
+public/engine/whistle.cact
 models/
+*.cact
