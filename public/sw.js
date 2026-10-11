@@ -1,11 +1,14 @@
 // Caches everything the app needs, so after the first visit it opens with no
 // network at all. The speech weights are cached on first use, not on install,
 // so the initial page load stays small.
-const CACHE = "gona-v1";
+const CACHE = "gona-v2";
 const SHELL = [
   "./",
   "./index.html",
   "./styles.css",
+  "./fonts/Inter-Regular.woff",
+  "./fonts/Inter-SemiBold.woff",
+  "./fonts/InterDisplay-ExtraBold.woff",
   "./app.js",
   "./engine.js",
   "./matcher.js",

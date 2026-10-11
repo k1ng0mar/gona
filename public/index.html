@@ -3,51 +3,100 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1e2c6b">
 <title>Gona, offline crop advisor</title>
+<meta name="description" content="Describe a sick plant out loud and get a diagnosis and what to do about it. Works with no signal. Nothing leaves your device.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231e2c6b'/%3E%3Cpath d='M16 25v-9' stroke='%23ebb23c' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3Cpath d='M16 18c-5 0-8-2.500-8-7 5 0 8 2.500 8 7z' fill='%23ebb23c'/%3E%3Cpath d='M16 15c0-4.500 3-7 8-7 0 4.500-3 7-8 7z' fill='%23ebb23c'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="hero">
-  <div class="wrap">
-    <div class="brand">Gona</div>
-    <h1>What is wrong with my crop?</h1>
-    <p class="sub">Press the button and describe what you see. Works with no signal.
-      The answer comes from a knowledge base on this device, not the internet.</p>
-  </div>
-</header>
+<div class="shell">
 
-<main class="wrap">
-  <section class="card" id="mic-card">
-    <button id="mic" aria-label="Describe the problem out loud">
-      <span class="mic-dot"></span>
-      <span id="mic-label">Hold to speak</span>
-    </button>
-    <p class="hint" id="mic-hint">Or type below if you prefer.</p>
+  <header class="masthead">
+    <a class="brand" href="./" aria-label="Gona, home">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="16" fill="#1e2c6b"/>
+        <path d="M16 25v-9" stroke="#ebb23c" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M16 18c-5 0-8-2.5-8-7 5 0 8 2.5 8 7z" fill="#ebb23c"/>
+        <path d="M16 15c0-4.5 3-7 8-7 0 4.5-3 7-8 7z" fill="#ebb23c"/>
+      </svg>
+      <span>Gona</span>
+    </a>
+    <span id="engine-chip" class="chip" data-state="loading" role="status">
+      <i aria-hidden="true"></i><span id="engine-chip-text">Getting ready</span>
+    </span>
+  </header>
 
-    <form id="type-form">
-      <label for="symptoms">Describe the problem</label>
-      <textarea id="symptoms" rows="3"
-        placeholder="e.g. my tomato leaves have yellow patches and grey spots underneath"></textarea>
-      <button type="submit" class="go">Diagnose</button>
-    </form>
-    <p class="fine">No account. No network. Nothing you say leaves this device.</p>
-  </section>
+  <main class="layout">
 
-  <div id="status" class="hidden"></div>
+    <section class="intro">
+      <h1>What's wrong with your crop?</h1>
+      <p class="sub">Hold the button and describe what you see. Gona answers from a field guide saved on this device, so it works with no signal.</p>
+    </section>
 
-  <section id="results" class="hidden">
-    <div class="card">
-      <h2 id="result-title">Diagnosis</h2>
-      <p class="heard" id="heard"></p>
+    <div class="stage">
+
+      <section class="panel" id="mic-card" aria-label="Describe the problem">
+        <div class="mic-stage">
+          <button id="mic" class="mic" type="button" data-ready="false"
+                  aria-label="Hold to describe the problem out loud" aria-describedby="mic-label">
+            <svg class="ring" viewBox="0 0 220 220" aria-hidden="true">
+              <circle cx="110" cy="110" r="98"/>
+            </svg>
+            <span class="disc" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="12" y="4" width="8" height="15" rx="4"/>
+                <path d="M7.500 14.500a8.500 8.500 0 0 0 17 0M16 23v4.500M12 27.500h8"/>
+              </svg>
+            </span>
+          </button>
+          <p class="mic-label" id="mic-label">Hold to speak</p>
+          <p class="mic-hint" id="mic-hint">Or type it below.</p>
+        </div>
+
+        <form id="type-form" class="type">
+          <label for="symptoms">What are you seeing?</label>
+          <textarea id="symptoms" rows="3"
+            placeholder="e.g. my tomato leaves have yellow patches and grey spots underneath"></textarea>
+          <button type="submit" class="btn btn-primary go">Diagnose</button>
+        </form>
+        <p class="fine">No account. No network. Nothing you say leaves this device.</p>
+      </section>
+
+      <div id="status" class="hidden" role="status" aria-live="polite"></div>
+
+      <section id="results" class="hidden" tabindex="-1" aria-labelledby="result-title">
+        <h2 class="sr-only" id="result-title">Diagnosis</h2>
+        <p class="heard" id="heard"></p>
+        <div id="matches"></div>
+        <button id="again" class="btn btn-line again" type="button">Check another plant</button>
+      </section>
+
     </div>
-    <div id="matches"></div>
-    <button id="again" class="ghost">Check another plant</button>
-  </section>
-</main>
 
-<footer class="wrap">
-  <p id="kb-line">Loading knowledge base...</p>
-</footer>
+    <dl class="facts">
+      <div>
+        <dt>Works with no signal</dt>
+        <dd>The speech model and the field guide are saved on your device after the first visit.</dd>
+      </div>
+      <div>
+        <dt>Every answer cites its source</dt>
+        <dd>Each entry comes from published plant pathology and extension sources, not from a model's guess.</dd>
+      </div>
+      <div>
+        <dt>Open and correctable</dt>
+        <dd>The field guide is a plain JSON file. If an entry is wrong, anyone can fix the text.</dd>
+      </div>
+    </dl>
+
+  </main>
+
+  <footer class="foot">
+    <p id="kb-line">Loading knowledge base...</p>
+    <p>Gona means "farm" in Hausa.</p>
+  </footer>
+
+</div>
 
 <script type="module" src="app.js"></script>
 <script>

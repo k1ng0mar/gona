@@ -116,3 +116,14 @@ Speech model: Whistle and the Needle engine by Cactus Compute, Apache 2.0.
 ## License
 
 MIT
+
+## Design notes
+
+Indigo (Kano dye pits), millet gold and a harmattan-haze ground, instead of the
+usual agtech green. The mic button is ringed by tick marks that lengthen with
+your voice. Urgency (act now / act soon / watch) is shown by colour and by
+shape, so it reads in bright sun.
+
+Fonts are bundled in `public/fonts` (Inter and Inter Display, SIL OFL, see
+`LICENSE.txt` there) so the app looks the same with no signal. If you change
+the fonts or any file the app loads, bump `CACHE` in `public/sw.js`.
