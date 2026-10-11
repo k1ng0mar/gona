@@ -122,7 +122,8 @@ body {
   --level: 0;
   position: relative; display: grid; place-items: center;
   width: min(240px, 66vw); aspect-ratio: 1; padding: 0;
-  border: 0; background: none; color: var(--gold); cursor: pointer;
+  border: 2px solid transparent; /* forced-colors: keeps the control's shape when backgrounds are removed */
+  background: none; color: var(--gold); cursor: pointer;
   -webkit-tap-highlight-color: transparent; touch-action: none;
   user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
 }
@@ -136,6 +137,7 @@ body {
 .disc {
   display: grid; place-items: center; width: 70%; aspect-ratio: 1; border-radius: 50%;
   background: var(--indigo); color: inherit;
+  border: 2px solid transparent; /* forced-colors: keeps the disc's shape when backgrounds are removed */
   transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s;
 }
 .disc svg { width: 38%; height: auto; }
@@ -175,8 +177,9 @@ textarea:focus-visible { outline: 3px solid var(--indigo); outline-offset: 1px; 
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
-  min-height: 52px; padding: 0 22px; border: 0; border-radius: var(--r);
+  min-height: 52px; padding: 0 22px; border-radius: var(--r);
   font: 600 1rem/1 var(--text); cursor: pointer;
+  border: 2px solid transparent; /* forced-colors: keeps the button's shape when backgrounds are removed */
 }
 .btn:focus-visible { outline: 3px solid var(--indigo); outline-offset: 3px; }
 .btn-primary { background: var(--indigo); color: #fff; }
