@@ -6,6 +6,8 @@ No signal required, nothing leaves the device.
 
 Gona means "farm" in Hausa.
 
+![Gona on a phone: hold the button and describe what you see](screenshot.png)
+
 ## Why
 
 Crop diagnosis apps assume you have signal in the field. You often do not.
