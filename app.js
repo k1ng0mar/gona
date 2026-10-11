@@ -12,6 +12,7 @@ const esc = (s) =>
 
 let KB = null;
 let engineReady = false;
+let lastTop = null;
 
 function showStatus(kind, msg) {
   const s = $("status");
@@ -20,6 +21,12 @@ function showStatus(kind, msg) {
 }
 function hideStatus() {
   $("status").className = "hidden";
+}
+
+// small pill in the header: getting ready / speech ready / typing only
+function setChip(state, text) {
+  $("engine-chip").dataset.state = state;
+  $("engine-chip-text").textContent = text;
 }
 
 // read the answer out with the device's own voice, no model needed
@@ -42,44 +49,99 @@ async function warmEngine() {
   try {
     await initEngine((stage) => showStatus("loading", stage + "..."));
     engineReady = true;
+    $("mic").dataset.ready = "true";
+    setChip("ready", "Speech ready");
     hideStatus();
   } catch (e) {
     $("mic").disabled = true;
     $("mic-label").textContent = "Speech unavailable";
     $("mic-hint").textContent = "Type the symptoms instead, that still works offline.";
+    setChip("off", "Typing only");
+    hideStatus();
   }
 }
 
+function urgencyOf(u) {
+  return u === "high" || u === "medium" ? u : "low";
+}
 function urgencyLabel(u) {
-  if (u === "high") return "act now";
-  if (u === "medium") return "act soon";
-  return "watch";
+  if (u === "high") return "Act now";
+  if (u === "medium") return "Act soon";
+  return "Watch";
+}
+
+// the source field holds ids like "cabi_faw, iita_cmd"; show the full citations
+function citations(m) {
+  const ids = String(m.source || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const table = (KB && KB.meta && KB.meta.sources) || {};
+  return ids.map((id) => table[id] || id);
+}
+
+function metaLine(m) {
+  const crop = String(m.crop || "").split(",").map((c) => c.trim()).filter(Boolean).join(", ");
+  return `<p class="meta"><span class="crop">${esc(crop)}</span><span>${esc(m.pathogen)}</span></p>`;
+}
+
+function detailBlocks(m) {
+  const steps = (m.treatment || []).map((t) => `<li><span>${esc(t)}</span></li>`).join("");
+  const why = (m.matched_symptoms || []).map((t) => `<li>${esc(t)}</li>`).join("");
+  const conf = (m.confusions || []).map((c) => `<li>${esc(c)}</li>`).join("");
+  const src = citations(m).map((c) => `<li>${esc(c)}</li>`).join("");
+  return `
+    <h3>What to do</h3>
+    <ol class="steps">${steps}</ol>
+    ${why ? `<details class="more"><summary>Why this matched</summary><ul class="plain">${why}</ul></details>` : ""}
+    ${conf ? `<details class="more"><summary>Similar problems, how to tell them apart</summary><ul class="plain">${conf}</ul></details>` : ""}
+    ${src ? `<div class="sources"><h4>Sources</h4><ul>${src}</ul></div>` : ""}
+  `;
 }
 
 function renderMatches(matches) {
   const box = $("matches");
   box.innerHTML = "";
+
   matches.forEach((m, i) => {
-    const card = document.createElement("div");
-    card.className = "card match" + (i === 0 ? " top" : "");
-    const treat = (m.treatment || []).map((t) => `<li>${esc(t)}</li>`).join("");
-    const conf = (m.confusions || []).map((c) => `<li>${esc(c)}</li>`).join("");
-    // every interpolation passes through esc(), urgencyLabel returns a fixed string
-    card.innerHTML = `
-      <div class="match-head">
-        <h2>${esc(m.name)}</h2>
-        <span class="tag ${esc(m.urgency)}">${esc(urgencyLabel(m.urgency))}</span>
-      </div>
-      <p class="pathogen">${esc(m.pathogen)} on ${esc(m.crop)}</p>
-      ${i === 0 ? '<p class="conf">Most likely match.</p>' : ""}
-      <h3>What to do</h3>
-      <ul class="treat">${treat}</ul>
-      ${conf ? `<details><summary>Similar problems, how to tell them apart</summary><ul class="plain">${conf}</ul></details>` : ""}
-      <p class="src">Source: ${esc(m.source)}</p>
-    `;
-    box.appendChild(card);
+    const u = urgencyOf(m.urgency);
+    const label = urgencyLabel(u);
+    // every interpolation passes through esc(), urgencyOf/urgencyLabel return fixed strings
+    if (i === 0) {
+      const card = document.createElement("article");
+      card.className = `match top urgency-${u}`;
+      const canSpeak = "speechSynthesis" in window;
+      card.innerHTML = `
+        <div class="band">${label}</div>
+        <div class="match-body">
+          <h2>${esc(m.name)}</h2>
+          ${metaLine(m)}
+          ${canSpeak ? '<button type="button" class="btn btn-line listen">Listen to the steps</button>' : ""}
+          ${detailBlocks(m)}
+        </div>`;
+      box.appendChild(card);
+    } else {
+      if (i === 1) {
+        const h = document.createElement("h3");
+        h.className = "also";
+        h.textContent = "Also possible";
+        box.appendChild(h);
+      }
+      const card = document.createElement("details");
+      card.className = `match alt urgency-${u}`;
+      card.innerHTML = `
+        <summary><span class="alt-name">${esc(m.name)}</span><span class="tag">${label}</span></summary>
+        <div class="match-body">
+          ${metaLine(m)}
+          ${detailBlocks(m)}
+        </div>`;
+      box.appendChild(card);
+    }
   });
 }
+
+$("matches").addEventListener("click", (e) => {
+  if (!e.target.closest(".listen") || !lastTop) return;
+  const steps = (lastTop.treatment || []).join(". ");
+  speak(`${lastTop.name}. ${steps}`);
+});
 
 function diagnose(text) {
   if (!KB) return;
@@ -91,53 +153,93 @@ function diagnose(text) {
     );
     return;
   }
-  $("heard").textContent = text;
+  $("heard").textContent = "“" + text + "”";
   renderMatches(result.matches);
   $("mic-card").classList.add("hidden");
+  $("facts").classList.add("hidden");
   hideStatus();
   $("results").classList.remove("hidden");
+  $("results").focus({ preventScroll: true });
+  $("results").scrollIntoView({ block: "start" });
   const top = result.matches[0];
+  lastTop = top;
   speak(`${top.name}. ${(top.treatment || [])[0] || ""}`);
 }
 
 // ---- capture straight to samples, run the local model, no upload ----
 let recording = false;
+let starting = false;
+let held = false; // is the button still down
 let audioCtx = null;
 let sourceNode = null;
 let procNode = null;
 let streamRef = null;
 let buffers = [];
 let sampleRate = 16000;
+let level = 0;
+
+function setLive(on) {
+  $("mic").classList.toggle("live", on);
+  $("mic-label").classList.toggle("live", on);
+  $("mic-label").textContent = on ? "Listening. Let go when you are done." : "Hold to speak";
+  if (!on) {
+    level = 0;
+    $("mic").style.setProperty("--level", "0");
+  }
+}
 
 async function startRecording() {
-  if (recording || !engineReady) return;
+  if (recording || starting) return;
+  if (!engineReady) {
+    showStatus("loading", "The speech model is still loading. You can type in the meantime.");
+    return;
+  }
+  starting = true;
+  held = true;
   try {
-    streamRef = await navigator.mediaDevices.getUserMedia({
+    const stream = await navigator.mediaDevices.getUserMedia({
       audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true },
     });
+    // let go before the microphone opened: switch it straight off again
+    if (!held) {
+      stream.getTracks().forEach((t) => t.stop());
+      return;
+    }
+    streamRef = stream;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     sampleRate = audioCtx.sampleRate;
     sourceNode = audioCtx.createMediaStreamSource(streamRef);
     procNode = audioCtx.createScriptProcessor(4096, 1, 1);
     buffers = [];
-    procNode.onaudioprocess = (e) =>
-      buffers.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+    procNode.onaudioprocess = (e) => {
+      const d = e.inputBuffer.getChannelData(0);
+      buffers.push(new Float32Array(d));
+      // loudness for the ring: quick to rise, slow to fall
+      let sum = 0;
+      let n = 0;
+      for (let i = 0; i < d.length; i += 8) {
+        sum += d[i] * d[i];
+        n++;
+      }
+      level = Math.max(Math.min(1, Math.sqrt(sum / n) * 7), level * 0.75);
+      $("mic").style.setProperty("--level", level.toFixed(3));
+    };
     sourceNode.connect(procNode);
     procNode.connect(audioCtx.destination);
     recording = true;
-    $("mic").classList.add("live");
-    $("mic-label").textContent = "Listening, release when done";
+    setLive(true);
     showStatus("loading", "Listening...");
   } catch (e) {
     showStatus("error", "Microphone is not available. Type the symptoms instead.");
+  } finally {
+    starting = false;
   }
 }
 
 async function stopRecording() {
   if (!recording) return;
   recording = false;
-  $("mic").classList.remove("live");
-  $("mic-label").textContent = "Hold to speak";
+  setLive(false);
 
   try {
     if (procNode) procNode.disconnect();
@@ -175,15 +277,38 @@ async function stopRecording() {
   }
 }
 
-$("mic").addEventListener("mousedown", startRecording);
-$("mic").addEventListener("touchstart", (e) => {
+function release() {
+  held = false;
+  stopRecording();
+}
+
+const mic = $("mic");
+mic.addEventListener("mousedown", startRecording);
+mic.addEventListener("touchstart", (e) => {
   e.preventDefault();
   startRecording();
 });
-$("mic").addEventListener("mouseup", stopRecording);
-$("mic").addEventListener("touchend", (e) => {
+mic.addEventListener("mouseup", release);
+mic.addEventListener("mouseleave", release);
+mic.addEventListener("touchend", (e) => {
   e.preventDefault();
-  stopRecording();
+  release();
+});
+mic.addEventListener("touchcancel", release);
+mic.addEventListener("blur", release);
+mic.addEventListener("contextmenu", (e) => e.preventDefault());
+// keyboard: hold Space or Enter, the same as holding the button
+mic.addEventListener("keydown", (e) => {
+  if ((e.key === " " || e.key === "Enter") && !e.repeat) {
+    e.preventDefault();
+    startRecording();
+  }
+});
+mic.addEventListener("keyup", (e) => {
+  if (e.key === " " || e.key === "Enter") {
+    e.preventDefault();
+    release();
+  }
 });
 
 $("type-form").addEventListener("submit", (e) => {
@@ -193,8 +318,10 @@ $("type-form").addEventListener("submit", (e) => {
 });
 
 $("again").addEventListener("click", () => {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   $("results").classList.add("hidden");
   $("mic-card").classList.remove("hidden");
+  $("facts").classList.remove("hidden");
   $("symptoms").value = "";
   hideStatus();
   window.scrollTo({ top: 0, behavior: "smooth" });

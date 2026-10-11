@@ -44,6 +44,17 @@ async function init(onProgress) {
   onProgress && onProgress("loading speech model");
   const res = await fetch(ENGINE.weights);
   if (!res.ok) throw new Error("Could not load the speech model.");
+  // Cache the weights explicitly. On a first visit the service worker may not
+  // have been controlling the page when this fetch started, so its fetch
+  // handler never saw the response and the 17MB would be downloaded again on
+  // the next visit. Writing it here makes "works with no signal" true from
+  // the second load onward, regardless of that race.
+  try {
+    const cache = await caches.open("gona-v2");
+    await cache.put(ENGINE.weights, res.clone());
+  } catch (e) {
+    /* caching is best-effort; the model still works this session */
+  }
   const cact = new Uint8Array(await res.arrayBuffer());
 
   const ptr = mod._malloc(cact.length);
