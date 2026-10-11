@@ -1,0 +1,30 @@
+[
+  {
+    "w": 390,
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Gona Text": "93%",
+        "Gona Display": "7%"
+      },
+      "sizes": [
+        40,
+        24,
+        18,
+        16,
+        15,
+        14,
+        13
+      ],
+      "body": 16,
+      "hues": [
+        240
+      ],
+      "boxes": 3,
+      "cardGrids": 0,
+      "defaultIcons": 0,
+      "focusStops": 4
+    }
+  }
+]

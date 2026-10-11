@@ -156,6 +156,7 @@ function diagnose(text) {
   $("heard").textContent = "“" + text + "”";
   renderMatches(result.matches);
   $("mic-card").classList.add("hidden");
+  $("facts").classList.add("hidden");
   hideStatus();
   $("results").classList.remove("hidden");
   $("results").focus({ preventScroll: true });
@@ -320,6 +321,7 @@ $("again").addEventListener("click", () => {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   $("results").classList.add("hidden");
   $("mic-card").classList.remove("hidden");
+  $("facts").classList.remove("hidden");
   $("symptoms").value = "";
   hideStatus();
   window.scrollTo({ top: 0, behavior: "smooth" });
