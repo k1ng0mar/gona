@@ -114,6 +114,11 @@ body {
 }
 @media (min-width: 920px) { .panel { padding: 40px 40px 32px; } }
 
+/* Phone: the mic disc sits directly on the ground, no card chrome. */
+@media (max-width: 919px) {
+  .panel { background: transparent; border-color: transparent; }
+}
+
 .mic-stage { display: grid; justify-items: center; }
 
 /* The memorable bit: a ring of tick marks that lengthens with your voice.
@@ -129,7 +134,7 @@ body {
 }
 .ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; transform: rotate(-90deg); }
 .ring circle {
-  fill: none; stroke: var(--indigo); stroke-opacity: 0.3;
+  fill: none; stroke: var(--indigo); stroke-opacity: 0.6;
   stroke-dasharray: 2.4 7.8625; /* 60 ticks around r=98 */
   stroke-width: calc(3px + var(--level) * 16px);
   transition: stroke-width 0.09s linear, stroke-opacity 0.2s;
@@ -207,7 +212,7 @@ textarea:focus-visible { outline: 3px solid var(--indigo); outline-offset: 1px; 
 #results:focus { outline: none; }
 .heard {
   margin: 0 0 16px; padding-left: 14px; border-left: 3px solid var(--indigo);
-  color: var(--muted); font-style: italic;
+  color: var(--ink); font-style: normal;
 }
 .heard::before { content: "You said  "; color: var(--ink); font-style: normal; font-weight: 600; }
 
